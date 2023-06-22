@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRUD Operations with React</title>
+  <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/javascript">
+    const { useState } = React;
+
+    function TeamPlayers() {
+      const [players, setPlayers] = useState([]);
+      const [name, setName] = useState('');
+      const [score, setScore] = useState('');
+      const [selectedPlayerIndex, setSelectedPlayerIndex] = useState(-1);
+      const [boxColor, setBoxColor] = useState('');
+
+      const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        if (name === 'name') {
+          setName(value);
+        } else if (name === 'score') {
+          setScore(value);
+        } else if (name === 'boxColor') {
+          setBoxColor(value);
+        }
+      };
+
+      const handleAddPlayer = () => {
+        const newPlayer = { name, score: parseFloat(score) };
+        setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
+        setName('');
+        setScore('');
+      };
+
+      const handleEditPlayer = (index) => {
+        const selectedPlayer = players[index];
+        setName(selectedPlayer.name);
+        setScore(selectedPlayer.score.toString());
+        setSelectedPlayerIndex(index);
+      };
+
+      const handleUpdatePlayer = () => {
+        if (selectedPlayerIndex !== -1) {
+          const updatedPlayer = { name, score: parseFloat(score) };
+          setPlayers((prevPlayers) => {
+            const updatedPlayers = [...prevPlayers];
+            updatedPlayers[selectedPlayerIndex] = updatedPlayer;
+            return updatedPlayers;
+          });
+          setName('');
+          setScore('');
+          setSelectedPlayerIndex(-1);
+        }
+      };
+
+      const handleDeletePlayer = (index) => {
+        setPlayers((prevPlayers) => {
+          const updatedPlayers = [...prevPlayers];
+          updatedPlayers.splice(index, 1);
+          return updatedPlayers;
+        });
+      };
+
+      const calculateTotalGoals = () => {
+        let totalGoals = 0;
+        players.forEach((player) => {
+          totalGoals += player.score;
+        });
+        return totalGoals;
+      };
+
+      const calculateAverageScore = () => {
+        const totalGoals = calculateTotalGoals();
+        if (players.length === 0) {
+          return 0;
+        } else {
+          return (totalGoals / players.length).toFixed(2);
+        }
+      };
+
+      return (
+        React.createElement("div", null,
+          React.createElement("h1", null, "CRUD Operations with React"),
+          React.createElement("form", null,
+            React.createElement("label", null,
+              "Name:",
+              React.createElement("input", {
+                type: "text",
+                name: "name",
+                value: name,
+                onChange: handleInputChange
+              })
+            ),
+            React.createElement("br"),
+            React.createElement("label", null,
+              "Score:",
+              React.createElement("input", {
+                type: "number",
+                name: "score",
+                value: score,
+                onChange: handleInputChange
+              })
+            ),
+            React.createElement("br"),
+            React.createElement("button", { type: "button", onClick: handleAddPlayer }, "Add Player"),
+            React.createElement("button", { type: "button", onClick: handleUpdatePlayer }, "Update Player")
+          ),
+
+          React.createElement("h2", null, "Team Players:"),
+          React.createElement("ul", null,
+            players.map((player, index) => (
+              React.createElement("li", { key: index },
+                "Name: ", player.name, ", Score: ", player.score.toFixed(2),
+                React.createElement("button", { type: "button", onClick: () => handleEditPlayer(index) }, "Edit"),
+                React.createElement("button", { type: "button", onClick: () => handleDeletePlayer(index) }, "Delete")
+              )
+            ))
+          ),
+
+          React.createElement("h2", null, "Team Statistics:"),
+          React.createElement("p", null, "Total Goals: ", calculateTotalGoals()),
+          React.createElement("p", null, "Average Score: ", calculateAverageScore()),
+
+          React.createElement("h2", null, "Box Color:"),
+          React.createElement("input", {
+            type: "text",
+            name: "boxColor",
+            value: boxColor,
+            onChange: handleInputChange
+          }),
+          React.createElement("div", {
+            style: {
+              width: "1920px",
+              height: "1820px",
+              backgroundColor: boxColor,
+              marginTop: "10px"
+            }
+          })
+        )
+      );
+    }
+
+    ReactDOM.render(React.createElement(TeamPlayers), document.getElementById("root"));
+  </script>
+</body>
+</html>
